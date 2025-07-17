@@ -35,11 +35,11 @@ function App() {
 
   return (
     <div style={{ maxWidth: 400, margin: 'auto' }}>
-      <h1>📝 To-Do App</h1>
+      <h1>📝 Aimtec DNA zásady</h1>
       <input
         value={text}
         onChange={e => setText(e.target.value)}
-        placeholder="Napiš úkol"
+        placeholder="Zapiš"
       />
       <button onClick={addTodo}>Přidat</button>
       <ul>
