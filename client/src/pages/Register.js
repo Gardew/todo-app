@@ -1,32 +1,64 @@
 import React, { useState } from "react";
-import axios from "axios";
 
-function Register() {
-  const [form, setForm] = useState({ email: "", password: "" });
+export default function Register() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
 
-  const handleChange = e => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
-      await axios.post(`${process.env.REACT_APP_API_URL}/auth/register`, form);
-      alert("Registrace úspěšná. Nyní se přihlaste.");
-      window.location.href = "/login";
-    } catch (err) {
-      alert("Chyba při registraci");
+      const res = await fetch(
+        `${process.env.REACT_APP_API_URL}/auth/register`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        }
+      );
+
+      if (res.ok) {
+        setMessage("Registrace proběhla úspěšně! Přihlas se.");
+        setEmail("");
+        setPassword("");
+      } else {
+        const data = await res.json();
+        setMessage(data.message || "Chyba při registraci");
+      }
+    } catch (error) {
+      setMessage("Chyba serveru, zkuste to později.");
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <div>
       <h2>Registrace</h2>
-      <input name="email" placeholder="Email" onChange={handleChange} required />
-      <input name="password" type="password" placeholder="Heslo" onChange={handleChange} required />
-      <button type="submit">Registrovat se</button>
-    </form>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label>Email:</label><br />
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <label>Heslo:</label><br />
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            minLength={6}
+          />
+        </div>
+        <button type="submit">Registrovat</button>
+      </form>
+      {message && <p>{message}</p>}
+    </div>
   );
 }
-
-export default Register;
